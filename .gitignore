@@ -1,0 +1,47 @@
+# --- Python Environment ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+build/
+dist/
+
+# --- Environment Secrets & Configuration ---
+.env
+.env.*
+!.env.example
+*.secrets
+*.pem
+*.key
+
+# --- Package Management (uv) ---
+# Note: Keep uv.lock in version control for deterministic builds, 
+# but ignore the local tool cache if it's within the project.
+.uv/
+
+# --- Database & Caching ---
+*.db
+*.sqlite3
+# PostgreSQL local data (if running locally without Docker volumes)
+pgdata/
+redis_data/
+
+# --- IDE & System Files ---
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# --- Monitoring & Logs ---
+*.log
+prometheus_data/
+grafana_data/
+
+# --- Testing & Coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
