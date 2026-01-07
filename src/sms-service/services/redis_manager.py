@@ -24,7 +24,7 @@ async def get_redis_connection():
 This async function serves the purpose of returning a user from the redis store
 or passing it over to the DB
 """
-async def get_user_by_id(user_id: str) -> Dict:
+async def get_user_by[T](user_id: T) -> Dict[str, any] | None:
     pass
 
 
@@ -32,5 +32,5 @@ async def get_user_by_id(user_id: str) -> Dict:
 """
 This function serves the purpose of commiting a new entry to redis store
 """
-async def commit_user(payload: Dict) -> bool:
+async def commit_user(payload: Dict[str, any]) -> bool:
     pass

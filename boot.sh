@@ -14,6 +14,9 @@ printf "${BLUE}=====================================${NC}\n"
 echo -e "🔧 ${GREEN}Synchronizing environment with uv...${NC}"
 uv sync
 
+# Activate env
+# source .venv/bin/activate
+# echo -e "${GREEN} Environment entered...${NC}"
 # 3. Execution Phase
 echo -e "📡 ${GREEN}Launching FastAPI on http://127.0.0.1:8000${NC}"
 echo "-------------------------------------"

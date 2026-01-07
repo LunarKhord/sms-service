@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 REDIS_URL = os.getenv("REDIS_URL")
 RABBITMQ_URL = os.getenv("RABBITMQ_URL")
 POSTGRESQL_URL = os.getenv("DATABASE_URL")
+shared_data = {} # A dictionary to hold shared resources like DB engine, etc.
 
 
 
@@ -71,15 +72,16 @@ async def bootup_postgresql():
     try:
         engine = create_async_engine(POSTGRESQL_URL, echo=True)
         async_session = async_sessionmaker(engine, expire_on_commit=False)
+        shared_data["database_engine"] = engine
         # Test connection
         async with engine.begin() as conn:
             await conn.run_sync(lambda conn: None)  # Simple no-op to test connection
         logger.info(f"PostgreSQL connection success: {engine}")
-        return async_session
+        return (async_session, engine)
     except Exception as postgresql_conn_error:
         logger.error(f"Could not connect to PostgreSQL: {postgresql_conn_error}")
         raise
-    pass
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -88,7 +90,7 @@ async def lifespan(app: FastAPI):
     # Connection attempts
     reddit_pool = await bootup_redis()
     rabbitmq_connection = await bootup_rabbitmq()
-    postgresql_connection = await bootup_postgresql()
+    postgresql_session, postgresql_engine = await bootup_postgresql()
 
     yield
 
@@ -96,8 +98,13 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down connections.....")
     await reddit_pool.disconnect() 
     await rabbitmq_connection.close()
-    await postgresql_connection.close_all()
+    await postgresql_engine.dispose()
 
+async def get_db_engine():
+    try:
+        return shared_data.get("database_engine")
+    except Exception as e:
+        logger.error(f"Error getting DB engine: {e}")
+        raise
 
 app = FastAPI(title="sms-servive", lifespan=lifespan)
-
